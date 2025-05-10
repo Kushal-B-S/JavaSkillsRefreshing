@@ -1,0 +1,166 @@
+History and Evolution of Java
+
+Creator: James Gosling (Sun Microsystems, 1995)
+Goal: "Write Once, Run Anywhere" – Platform independence via the JVM
+---------------------------------------------------------------------------
+Compilation and Execution Flow
+
+Java source code is written in .java files.
+These files are compiled using the Java Compiler (javac) into .class files containing bytecode.
+Bytecode is a platform-independent intermediate format.
+The Java Virtual Machine (JVM) executes this bytecode.
+The JVM translates bytecode to native machine code at runtime, typically using Just-In-Time (JIT) compilation.
+Java Runtime Environment (JRE) includes the JVM and standard libraries required to run applications.
+Java Development Kit (JDK) includes the JRE and development tools (like the compiler, debugger, etc.).
+JVM is the engine; JRE is the runtime; JDK is the full development toolkit.
+Multiple JVM implementations exist, including Oracle HotSpot, OpenJ9, and GraalVM.
+---------------------------------------------------------------------------
+
+ Java Memory Model (JMM)
+ 
+The Java Memory Model defines how the Java Virtual Machine organizes memory at runtime. It’s critical for performance, multithreading, and memory management.
+
+1. Heap Memory
+Main memory area where all objects and class instances are stored.
+Shared across all threads.
+Managed by the Garbage Collector.
+Divided into generations:
+Young Generation: Newly created objects (short-lived).
+Old Generation (Tenured): Long-lived objects.
+Metaspace: Stores class metadata (replaced PermGen after Java 8).
+
+2. Stack Memory
+Each thread has its own stack.
+Stores method call frames, local variables, and references.
+Operates in a Last-In-First-Out (LIFO) manner.
+Memory is automatically freed when the method exits.
+
+3. Method Area
+Stores class structures, method definitions, and static variables.
+Shared among all threads.
+Part of Metaspace from Java 8 onwards.
+
+4. Program Counter (PC) Register
+Each thread has its own Program Counter.
+Holds the address of the currently executing bytecode instruction.
+
+5. Native Method Stack
+Supports execution of native (non-Java) methods.
+Typically used when Java interfaces with code written in languages like C or C++ through JNI.
+--------------------------------------------------------------------------
+
+C. Garbage Collection (GC)
+Java uses automatic memory management via garbage collection.
+Identifies and removes objects no longer reachable from the application.
+Different GC algorithms:
+Serial GC – Suitable for small applications.
+Parallel GC – Multi-threaded GC for better performance.
+G1 GC – Splits heap into regions; balances throughput and pause times.
+ZGC / Shenandoah – Low-latency collectors for large heaps.
+D. Thread Safety and Memory Visibility
+Java provides synchronization and volatile keyword to control how variables are read/written across threads.
+The memory model defines the happens-before relationships to ensure thread safety in concurrent environments.
+
+🔹 How GC Works
+"Java objects are allocated in the heap memory. When an object becomes unreachable—meaning no live thread or reference can access it—the GC marks it for removal. The GC process typically has three phases: mark, sweep, and compact."
+🔹 GC Phases
+Mark: Identifies live (reachable) objects.
+Sweep: Clears out unreachable (garbage) objects.
+Compact: Rearranges memory to reduce fragmentation.
+🔹 GC Generations
+"The heap is divided into generations:
+Young Generation: Where new objects are created. Most objects die here quickly.
+Old Generation: Stores long-living objects.
+Metaspace: Stores class metadata.
+Objects move from young to old if they survive GC cycles (this is called tenuring)."
+🔹 Types of Garbage Collectors
+"Java provides several collectors, each optimized for different use cases:
+Serial GC: Single-threaded, best for small apps.
+Parallel GC: Multi-threaded, better throughput.
+G1 GC: Balanced performance, divides heap into regions.
+ZGC / Shenandoah: Designed for ultra-low pause times in large heap systems."
+✅ To Wrap It Up Confidently:
+"GC in Java is powerful because it abstracts away manual memory management, reducing bugs like memory leaks or dangling pointers. Understanding the collector behavior and tuning it can drastically improve application performance in production systems."
+--------------------------------------------------------------------------
+
+1. Variables and Data Types
+Primitive Types: These are basic data types in Java (e.g., int, char, boolean, double, etc.). They are stored directly in memory and are passed by value.
+Wrapper Classes: For each primitive type, Java has a corresponding wrapper class (e.g., Integer, Double, Boolean). These classes allow you to treat primitive types as objects. They are stored in heap memory and allow for null values (unlike primitives).
+
+Default Values:
+Instance variables (fields) have default values when not initialized.
+Local variables must be explicitly initialized before use; otherwise, they cause a compile-time error.
+String: In Java, a String is an immutable object. Once created, it cannot be modified. String manipulation creates new objects rather than altering the original. String literals are stored in the String pool to optimize memory usage by sharing identical values across multiple references.
+
+Memory Allocation:
+Primitives are stored on the stack when they are local variables.
+Objects (including arrays) are stored on the heap, but the reference to the object is stored on the stack (if local).
+Strings stored as literals are stored in the String pool (a part of the heap).
+--------------------------------------------------------------------------
+
+2. Control Flow (If-Else and Nested If-Else)
+If-Else:
+In Java, if conditions require boolean expressions.
+The if statement checks conditions and the else statement handles the opposite case.
+Nested If-Else:
+Used when you need to check multiple conditions.
+Can lead to deep nesting, which is generally discouraged for readability. Instead, it’s better to use logical operators or refactor using methods.
+
+Conditional Expressions:
+In Java, there’s no automatic type coercion for conditional expressions. For example, you can’t compare an int to a boolean directly.
+--------------------------------------------------------------------------
+
+3. Arrays in Java
+Array Definition: An array is an object in Java. When an array is declared, its reference variable (pointer) is stored on the stack, but the actual data is stored in the heap memory.
+Default Values:
+When an array is created, the elements are automatically initialized to default values (0 for int, false for boolean, null for Object types).
+Array Size: The size of an array in Java is fixed after initialization. You cannot change the size of an array once it is created. If dynamic resizing is needed, use ArrayList.
+Memory Considerations:
+Arrays use continuous memory blocks for storage. When you declare an array, the memory is allocated contiguously in the heap.
+Arrays do not store references to other arrays or objects; they directly store the values of their elements.
+Multidimensional Arrays: These are arrays of arrays (e.g., int[][]). Each row in a 2D array is essentially a reference to another array in the heap.
+--------------------------------------------------------------------------
+
+4. Switch Case
+Switch Statement: A switch statement in Java evaluates an expression and compares it with case labels. If a match is found, the corresponding block of code executes.
+Fall-through: By default, if a break statement is not used, the program will fall through from one case to the next. This can lead to unexpected behavior.
+Switch Limitations:
+You cannot switch on long, float, double, or boolean.
+In earlier versions of Java, you could not use a String in a switch case. But from Java 7 onwards, you can use String.
+--------------------------------------------------------------------------
+
+5. String Pool
+What is the String Pool?
+The String pool (also known as the string literal pool) is a special area in Java memory that stores unique instances of string literals.
+Why is it needed?
+The pool is used to save memory and improve performance by reusing identical string values. When a string is created as a literal (e.g., "Hello"), Java checks if that string already exists in the pool. If it does, it simply references the existing string. This avoids creating multiple objects with the same value.
+--------------------------------------------------------------------------
+
+How does it work?
+When you declare a string like:
+
+String str = "Hello";
+Java places this string in the pool. If you create another string with the same value:
+
+String str2 = "Hello";
+Java does not create a new string object but rather points str2 to the existing one in the pool.
+
+Important Notes:
+
+Strings created using the new keyword (e.g., new String("Hello")) are not added to the pool unless explicitly done so.
+The string pool helps optimize memory but can cause string interning issues if used improperly (e.g., in dynamic or unpredictable string generation).
+--------------------------------------------------------------------------
+
+6. Key Interview Insights
+Immutability of Strings: Since String objects are immutable, when performing string concatenation in a loop, you may encounter performance issues due to the creation of many temporary objects. The recommended approach is to use StringBuilder or StringBuffer for concatenation in loops.
+
+Autoboxing: Java automatically converts primitive types into wrapper objects and vice versa in certain contexts (e.g., passing an int to a method expecting Integer). This is known as autoboxing and unboxing.
+
+Array Initialization:
+Arrays are zero-indexed in Java. If you try to access an index out of bounds (e.g., arr[10] in an array of size 5), you will get an ArrayIndexOutOfBoundsException.
+
+NullPointerException:
+
+You’ll get a NullPointerException when you try to access methods or fields of an object that is null.
+Arrays in Java are objects, so if the array reference is null, accessing its elements will throw a NullPointerException.
+--------------------------------------------------------------------------
